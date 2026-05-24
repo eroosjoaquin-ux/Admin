@@ -26,7 +26,7 @@
   <main class="max-w-4xl mx-auto w-full px-4 py-10 flex-grow space-y-8">
 
     <!-- ── MÉTRICAS Y CONTADORES (INSCRIPTOS) ── -->
-    <section id="metricas-section" class="grid grid-cols-2 md:grid-cols-6 gap-4">
+    <section id="metricas-section" class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
         <p class="text-[10px] text-slate-500 uppercase font-bold">Total</p>
         <p id="stat-total" class="text-2xl font-black text-white">0</p>
@@ -36,24 +36,16 @@
         <p id="stat-verificados" class="text-2xl font-black text-emerald-400">0</p>
       </div>
       <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
-        <p class="text-[10px] text-slate-500 uppercase font-bold">Pendientes</p>
+        <p class="text-[10px] text-slate-500 uppercase font-bold">Sin Verificar</p>
         <p id="stat-pendientes" class="text-2xl font-black text-amber-400">0</p>
       </div>
       <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
-        <p class="text-[10px] text-slate-500 uppercase font-bold">San Vicente</p>
-        <p id="stat-sv" class="text-2xl font-black text-white">0</p>
-      </div>
-      <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
-        <p class="text-[10px] text-slate-500 uppercase font-bold">Alejandro Korn</p>
-        <p id="stat-ak" class="text-2xl font-black text-white">0</p>
-      </div>
-      <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl">
-        <p class="text-[10px] text-slate-500 uppercase font-bold">Domselaar</p>
-        <p id="stat-do" class="text-2xl font-black text-white">0</p>
+        <p class="text-[10px] text-slate-500 uppercase font-bold">Noticias</p>
+        <p id="stat-noticias" class="text-2xl font-black text-white">0</p>
       </div>
     </section>
 
-    <!-- ── NUEVO: PANEL DE GESTIÓN (BRANDING Y NOTICIAS) ── -->
+    <!-- ── PANEL DE GESTIÓN (BRANDING Y NOTICIAS) ── -->
     <section class="bg-slate-950 border border-slate-800 p-6 rounded-2xl space-y-8">
       <div class="border-b border-slate-800 pb-4 mb-4">
         <h2 class="text-lg font-black text-amber-400">Gestor de Contenido</h2>
@@ -84,6 +76,18 @@
           <!-- Inputs ocultos -->
           <input type="file" id="upload-logo" class="hidden" accept="image/*" onchange="subirBranding(event, 'logo')">
           <input type="file" id="upload-portada" class="hidden" accept="image/*" onchange="subirBranding(event, 'portada')">
+          
+          <!-- Previews de imágenes actuales -->
+          <div id="branding-previews" class="space-y-3 hidden">
+            <div>
+              <p class="text-[10px] text-slate-500 uppercase mb-1">Logo actual</p>
+              <img id="preview-logo" class="h-14 object-contain bg-slate-900 rounded p-2 border border-slate-700" src="" alt="Logo">
+            </div>
+            <div>
+              <p class="text-[10px] text-slate-500 uppercase mb-1">Portada actual</p>
+              <img id="preview-portada" class="w-full h-24 object-cover rounded border border-slate-700" src="" alt="Portada">
+            </div>
+          </div>
         </div>
 
         <!-- Gestión de Noticias -->
@@ -115,8 +119,8 @@
         </div>
         
         <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Contenido (HTML permitido)</label>
-          <textarea id="contenido" required rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-amber-400 transition" placeholder="Escribí el cuerpo de la noticia..."></textarea>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Contenido</label>
+          <textarea id="detalle" required rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-amber-400 transition" placeholder="Escribí el cuerpo de la noticia..."></textarea>
         </div>
 
         <div>
@@ -138,7 +142,7 @@
       <div class="p-6 border-b border-slate-800 flex justify-between items-center">
         <div>
           <h2 class="text-lg font-black text-white">Base de Inscriptos</h2>
-          <p class="text-sm text-slate-400">Datos recibidos del bot de WhatsApp (solo lectura).</p>
+          <p class="text-sm text-slate-400">Datos recibidos del formulario. ✅ = correo confirmado · ❌ = sin confirmar.</p>
         </div>
         <button onclick="cargarInscriptos()" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded transition">Actualizar</button>
       </div>
@@ -151,11 +155,10 @@
 
   <script>
     // ==========================================
-    // 1. CONFIGURACIÓN DE SUPABASE (¡ATENCIÓN ACÁ!)
+    // 1. CONFIGURACIÓN DE SUPABASE
     // ==========================================
-    // PEGA ACÁ TUS CLAVES REALES DE SUPABASE
-    const supabaseUrl = 'TU_URL_DE_SUPABASE';
-    const supabaseKey = 'TU_KEY_DE_SUPABASE';
+    const supabaseUrl = 'https://zpepnwxedkrnvifelszv.supabase.co';
+    const supabaseKey = 'sb_publishable_Cwm0GB1AQfEZrodcjXPM_g_RiPmAaqC';
     const db = supabase.createClient(supabaseUrl, supabaseKey);
 
     // ==========================================
@@ -164,50 +167,54 @@
     function mostrarNotificacion(mensaje, tipo) {
       const el = document.getElementById('notificacion');
       el.textContent = mensaje;
-      el.className = `mt-4 p-3 rounded-lg text-sm font-bold text-center block ${tipo === 'success' ? 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30' : tipo === 'error' ? 'bg-red-500/20 text-red-500 border border-red-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`;
+      el.className = `mt-4 p-3 rounded-lg text-sm font-bold text-center block ${
+        tipo === 'success' ? 'bg-emerald-400/20 text-emerald-400 border border-emerald-400/30'
+        : tipo === 'error' ? 'bg-red-500/20 text-red-500 border border-red-500/30'
+        : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+      }`;
       setTimeout(() => el.classList.add('hidden'), 5000);
     }
 
     // ==========================================
-    // 3. NUEVO: LÓGICA DE BRANDING Y NOTICIAS
+    // 3. LÓGICA DE BRANDING
     // ==========================================
-    
-    // Subir imagen de Logo o Portada
     window.subirBranding = async function(event, bucketName) {
       const file = event.target.files[0];
       if (!file) return;
-
       try {
         mostrarNotificacion(`Subiendo ${bucketName}...`, 'info');
-        
-        // Creamos un nombre de archivo único para evitar caché
         const fileExt = file.name.split('.').pop();
         const fileName = `current_${bucketName}_${Date.now()}.${fileExt}`;
-        
-        // Subimos al bucket correspondiente (logo o portada)
-        const { data, error } = await db.storage.from(bucketName).upload(fileName, file, {
+        const { error } = await db.storage.from(bucketName).upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
         });
-
         if (error) throw error;
-
-        event.target.value = ''; // Limpiamos el input
-        mostrarNotificacion(`¡${bucketName.toUpperCase()} actualizado correctamente!`, 'success');
+        event.target.value = '';
         
+        // Mostrar preview
+        const { data: urlData } = db.storage.from(bucketName).getPublicUrl(fileName);
+        document.getElementById(`preview-${bucketName}`).src = urlData.publicUrl;
+        document.getElementById('branding-previews').classList.remove('hidden');
+        
+        mostrarNotificacion(`¡${bucketName.toUpperCase()} actualizado correctamente!`, 'success');
       } catch (err) {
         console.error(err);
         mostrarNotificacion(`Error al subir ${bucketName}. Verificá los permisos del bucket.`, 'error');
       }
     }
 
-    // Cargar todas las noticias en la lista
+    // ==========================================
+    // 4. GESTIÓN DE NOTICIAS
+    // ==========================================
     async function cargarNoticiasAdmin() {
       const container = document.getElementById('lista-noticias-admin');
       try {
         const { data, error } = await db.from('noticias').select('*').order('created_at', { ascending: false });
         if (error) throw error;
-        
+
+        document.getElementById('stat-noticias').textContent = data ? data.length : 0;
+
         if (!data || data.length === 0) {
           container.innerHTML = '<div class="p-4 text-center text-sm text-slate-500">No hay noticias publicadas.</div>';
           return;
@@ -216,12 +223,12 @@
         container.innerHTML = data.map(n => `
           <div class="flex justify-between items-center bg-slate-950 p-2 rounded border border-slate-800">
             <div class="flex items-center gap-3 overflow-hidden">
-              ${n.imagen_url 
-                ? `<img src="${n.imagen_url}" class="w-10 h-10 object-cover rounded flex-shrink-0">` 
+              ${n.imagen_url
+                ? `<img src="${n.imagen_url}" class="w-10 h-10 object-cover rounded flex-shrink-0">`
                 : `<div class="w-10 h-10 bg-slate-800 rounded flex-shrink-0 flex items-center justify-center text-[8px] text-slate-500">Sin Foto</div>`}
               <div class="truncate">
                 <p class="text-sm font-bold text-white truncate">${n.titulo}</p>
-                <p class="text-[10px] text-slate-500">${new Date(n.created_at).toLocaleDateString()}</p>
+                <p class="text-[10px] text-slate-500">${new Date(n.created_at).toLocaleDateString('es-AR')}</p>
               </div>
             </div>
             <button type="button" onclick="eliminarNoticia('${n.id}')" class="text-red-500 hover:text-red-300 bg-red-500/10 p-2 rounded ml-2 flex-shrink-0 transition">
@@ -234,52 +241,52 @@
       }
     }
 
-    // Borrar una noticia
     window.eliminarNoticia = async function(id) {
       if (!confirm('¿Seguro que querés borrar esta noticia definitivamente?')) return;
       try {
         mostrarNotificacion('Borrando...', 'info');
         const { error } = await db.from('noticias').delete().eq('id', id);
         if (error) throw error;
-        
         mostrarNotificacion('Noticia eliminada.', 'success');
-        cargarNoticiasAdmin(); // Recargar la listita
+        cargarNoticiasAdmin();
       } catch (err) {
         mostrarNotificacion('Error al borrar la noticia', 'error');
       }
     }
 
     // ==========================================
-    // 4. LÓGICA EXISTENTE (GUARDAR NOTICIA E INSCRIPTOS)
+    // 5. FORMULARIO PUBLICAR NOTICIA (CORREGIDO)
     // ==========================================
-    
     document.getElementById('noticia-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btn-submit');
-      const titulo = document.getElementById('titulo').value;
-      const contenido = document.getElementById('contenido').value;
+      const titulo = document.getElementById('titulo').value.trim();
+      const detalle = document.getElementById('detalle').value.trim();
       const archivoFoto = document.getElementById('foto').files[0];
-      
+
       try {
         btn.innerHTML = 'Subiendo...';
         btn.disabled = true;
-        
-        // 1. Subir al Bucket
+
+        // 1. Subir foto al bucket 'noticias'
         const fileName = `${Date.now()}_${archivoFoto.name}`;
-        const { data: uploadData, error: uploadError } = await db.storage.from('noticias').upload(fileName, archivoFoto);
+        const { error: uploadError } = await db.storage.from('noticias').upload(fileName, archivoFoto);
         if (uploadError) throw uploadError;
 
-        // 2. Obtener la URL
+        // 2. Obtener URL pública
         const { data: { publicUrl } } = db.storage.from('noticias').getPublicUrl(fileName);
 
-        // 3. Guardar en tabla
-        const { error: dbError } = await db.from('noticias').insert([{ titulo, contenido, imagen_url: publicUrl }]);
+        // 3. Guardar en tabla con campos correctos: titulo, detalle, imagen_url
+        const { error: dbError } = await db.from('noticias').insert([{
+          titulo,
+          detalle,
+          imagen_url: publicUrl
+        }]);
         if (dbError) throw dbError;
 
         mostrarNotificacion('¡Noticia publicada con éxito!', 'success');
         document.getElementById('noticia-form').reset();
-        
-        cargarNoticiasAdmin(); // Actualizamos la listita nueva automáticamente
+        cargarNoticiasAdmin();
 
       } catch (err) {
         console.error(err);
@@ -290,42 +297,55 @@
       }
     });
 
+    // ==========================================
+    // 6. TABLA INSCRIPTOS (CORREGIDA)
+    // ==========================================
     async function cargarInscriptos() {
       const el = document.getElementById('inscriptos-container');
       try {
-        const { data } = await db.from('inscripciones').select('*').order('created_at', { ascending: false });
-        
-        // Métricas
+        const { data, error } = await db.from('inscripciones').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+
+        // Métricas con campos reales del esquema
         const total = data.length;
         const verificados = data.filter(d => d.is_verified).length;
         document.getElementById('stat-total').textContent = total;
         document.getElementById('stat-verificados').textContent = verificados;
         document.getElementById('stat-pendientes').textContent = total - verificados;
-        document.getElementById('stat-sv').textContent = data.filter(d => d.ciudad === 'San Vicente').length;
-        document.getElementById('stat-ak').textContent = data.filter(d => d.ciudad === 'Alejandro Korn').length;
-        document.getElementById('stat-do').textContent = data.filter(d => d.ciudad === 'Domselaar').length;
 
-        // Tabla
+        // Tabla con campos reales: nombre, email, whatsapp, escuela, is_verified
         const rows = data.map(r => `
           <tr class="border-b border-slate-800 text-sm hover:bg-slate-800/50 transition">
-            <td class="p-3 font-bold">${r.nombre}</td>
-            <td class="p-3 text-slate-400">${r.email}</td>
+            <td class="p-3 font-bold">${r.nombre || '-'}</td>
+            <td class="p-3 text-slate-400">${r.email || '-'}</td>
             <td class="p-3">${r.whatsapp || '-'}</td>
-            <td class="p-3">${r.ciudad || '-'}</td>
+            <td class="p-3">${r.escuela || '-'}</td>
             <td class="p-3 text-center">${r.is_verified ? '✅' : '❌'}</td>
-            <td class="p-3 text-xs text-slate-500">${new Date(r.created_at).toLocaleDateString()}</td>
+            <td class="p-3 text-xs text-slate-500">${new Date(r.created_at).toLocaleDateString('es-AR')}</td>
           </tr>`).join('');
 
-        el.innerHTML = `<table class="w-full text-left"><thead><tr class="text-slate-500 text-[10px] uppercase"><th class="p-3">Nombre</th><th class="p-3">Email</th><th class="p-3">WhatsApp</th><th class="p-3">Ciudad</th><th class="p-3">Verif.</th><th class="p-3">Fecha</th></tr></thead><tbody>${rows}</tbody></table>`;
-      } catch(e) { 
-        el.innerHTML = "Error al cargar inscriptos."; 
+        el.innerHTML = `
+          <table class="w-full text-left">
+            <thead>
+              <tr class="text-slate-500 text-[10px] uppercase">
+                <th class="p-3">Nombre</th>
+                <th class="p-3">Email</th>
+                <th class="p-3">WhatsApp</th>
+                <th class="p-3">Escuela</th>
+                <th class="p-3">Correo verif.</th>
+                <th class="p-3">Fecha</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      } catch(e) {
+        el.innerHTML = "Error al cargar inscriptos.";
       }
     }
 
-    // Iniciar funciones
+    // Iniciar
     cargarNoticiasAdmin();
     cargarInscriptos();
-
   </script>
 </body>
 </html>
