@@ -4,8 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Control · HCD San Vicente</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Oculta la barra de desplazamiento en todos los navegadores */
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Esto asegura que las tarjetas tengan tamaño y no se achiquen */
+    #lista-noticias-admin > div { 
+      min-width: 250px !important; 
+      flex-shrink: 0 !important; 
+    }
+  </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
 
@@ -78,16 +91,14 @@
       <p class="text-xs text-slate-400">Deslizá para ver todas las noticias.</p>
       
       <div class="relative flex items-center">
-        <button type="button" onclick="document.getElementById('lista-noticias-admin').scrollBy({left: -300, behavior: 'smooth'})" class="absolute -left-3 z-10 bg-slate-800 text-white p-2 rounded-full shadow-lg hover:bg-slate-700">❮</button>
-        
-        <div id="lista-noticias-admin" class="scroll-container bg-slate-900 border border-slate-700 rounded-xl p-2 w-full gap-2">
-          <div class="p-4 text-center text-sm text-slate-500 w-full">Cargando noticias...</div>
-        </div>
-        
-        <button type="button" onclick="document.getElementById('lista-noticias-admin').scrollBy({left: 300, behavior: 'smooth'})" class="absolute -right-3 z-10 bg-slate-800 text-white p-2 rounded-full shadow-lg hover:bg-slate-700">❯</button>
-      </div>
-    </div>
-
+  <button type="button" onclick="document.getElementById('lista-noticias-admin').scrollBy({left: -300, behavior: 'smooth'})" class="absolute -left-3 z-10 bg-slate-800 text-white p-2 rounded-full shadow-lg hover:bg-slate-700">❮</button>
+  
+  <div id="lista-noticias-admin" class="flex overflow-x-auto hide-scrollbar bg-slate-900 border border-slate-700 rounded-xl p-2 w-full gap-4">
+    <div class="p-4 text-center text-sm text-slate-500 w-full">Cargando noticias...</div>
+  </div>
+  
+  <button type="button" onclick="document.getElementById('lista-noticias-admin').scrollBy({left: 300, behavior: 'smooth'})" class="absolute -right-3 z-10 bg-slate-800 text-white p-2 rounded-full shadow-lg hover:bg-slate-700">❯</button>
+</div>
   </div>
 </section>
             <!-- Botón Logo -->
