@@ -320,6 +320,8 @@
             <td class="p-3 text-slate-400">${r.email || '-'}</td>
             <td class="p-3">${r.whatsapp || '-'}</td>
             <td class="p-3">${r.escuela || '-'}</td>
+            <td class="p-3">${r.localidad || '-'}</td>
+            <td class="p-3 text-center">${r.edad || '-'}</td>
             <td class="p-3 text-center">${r.is_verified ? '✅' : '❌'}</td>
             <td class="p-3 text-xs text-slate-500">${new Date(r.created_at).toLocaleDateString('es-AR')}</td>
           </tr>`).join('');
@@ -332,6 +334,8 @@
                 <th class="p-3">Email</th>
                 <th class="p-3">WhatsApp</th>
                 <th class="p-3">Escuela</th>
+                <th class="p-3">Localidad</th>
+                <th class="p-3">Edad</th>
                 <th class="p-3">Correo verif.</th>
                 <th class="p-3">Fecha</th>
               </tr>
