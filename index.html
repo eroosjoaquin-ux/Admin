@@ -205,14 +205,17 @@
       try {
         mostrarNotificacion(`Subiendo ${bucketName}...`, 'info');
         const fileExt = file.name.split('.').pop();
-        const fileName = `current_${bucketName}_${Date.now()}.${fileExt}`;
+        // Nombre fijo por tipo: logo_actual.ext / portada_actual.ext
+        // upsert:true sobreescribe el anterior — el público siempre lee la misma URL
+        const fileName = `${bucketName}_actual.${fileExt}`;
         const { error } = await db.storage.from(bucketName).upload(fileName, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: true
         });
         if (error) throw error;
         delete _brandingPendiente[bucketName];
         document.getElementById(`upload-${bucketName}`).value = '';
+        document.getElementById(`confirm-${bucketName}`).classList.add('hidden');
         mostrarNotificacion(`¡${bucketName.toUpperCase()} actualizado correctamente!`, 'success');
       } catch (err) {
         console.error(err);
