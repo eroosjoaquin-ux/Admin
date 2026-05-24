@@ -64,29 +64,33 @@
           <div class="grid grid-cols-2 gap-4">
             <!-- Botón Logo -->
             <button type="button" onclick="document.getElementById('upload-logo').click()" class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center hover:bg-slate-800 transition">
-              <span class="block text-xs text-slate-400 mb-1">Cambiar</span>
+              <span class="block text-xs text-slate-400 mb-1">Elegir</span>
               <span class="font-bold text-white">Logo</span>
             </button>
             <!-- Botón Portada -->
             <button type="button" onclick="document.getElementById('upload-portada').click()" class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center hover:bg-slate-800 transition">
-              <span class="block text-xs text-slate-400 mb-1">Cambiar</span>
+              <span class="block text-xs text-slate-400 mb-1">Elegir</span>
               <span class="font-bold text-white">Portada</span>
             </button>
           </div>
           <!-- Inputs ocultos -->
-          <input type="file" id="upload-logo" class="hidden" accept="image/*" onchange="subirBranding(event, 'logo')">
-          <input type="file" id="upload-portada" class="hidden" accept="image/*" onchange="subirBranding(event, 'portada')">
-          
-          <!-- Previews de imágenes actuales -->
-          <div id="branding-previews" class="space-y-3 hidden">
-            <div>
-              <p class="text-[10px] text-slate-500 uppercase mb-1">Logo actual</p>
-              <img id="preview-logo" class="h-14 object-contain bg-slate-900 rounded p-2 border border-slate-700" src="" alt="Logo">
-            </div>
-            <div>
-              <p class="text-[10px] text-slate-500 uppercase mb-1">Portada actual</p>
-              <img id="preview-portada" class="w-full h-24 object-cover rounded border border-slate-700" src="" alt="Portada">
-            </div>
+          <input type="file" id="upload-logo" class="hidden" accept="image/*" onchange="previsualizarBranding(event, 'logo')">
+          <input type="file" id="upload-portada" class="hidden" accept="image/*" onchange="previsualizarBranding(event, 'portada')">
+
+          <!-- Preview + Confirmar Logo -->
+          <div id="confirm-logo" class="hidden space-y-2">
+            <p class="text-[10px] text-slate-500 uppercase mb-1">Vista previa · Logo</p>
+            <img id="preview-logo" class="h-14 object-contain bg-slate-900 rounded p-2 border border-slate-700" src="" alt="Logo">
+            <button type="button" onclick="confirmarBranding('logo')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg transition">✅ Confirmar y subir Logo</button>
+            <button type="button" onclick="cancelarBranding('logo')" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold py-2 rounded-lg transition">Cancelar</button>
+          </div>
+
+          <!-- Preview + Confirmar Portada -->
+          <div id="confirm-portada" class="hidden space-y-2">
+            <p class="text-[10px] text-slate-500 uppercase mb-1">Vista previa · Portada</p>
+            <img id="preview-portada" class="w-full h-24 object-cover rounded border border-slate-700" src="" alt="Portada">
+            <button type="button" onclick="confirmarBranding('portada')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg transition">✅ Confirmar y subir Portada</button>
+            <button type="button" onclick="cancelarBranding('portada')" class="w-full bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold py-2 rounded-lg transition">Cancelar</button>
           </div>
         </div>
 
@@ -178,8 +182,25 @@
     // ==========================================
     // 3. LÓGICA DE BRANDING
     // ==========================================
-    window.subirBranding = async function(event, bucketName) {
+
+    // Archivos pendientes de subir
+    const _brandingPendiente = {};
+
+    window.previsualizarBranding = function(event, bucketName) {
       const file = event.target.files[0];
+      if (!file) return;
+      _brandingPendiente[bucketName] = file;
+      // Mostrar preview local sin subir nada
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.getElementById(`preview-${bucketName}`).src = e.target.result;
+        document.getElementById(`confirm-${bucketName}`).classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.confirmarBranding = async function(bucketName) {
+      const file = _brandingPendiente[bucketName];
       if (!file) return;
       try {
         mostrarNotificacion(`Subiendo ${bucketName}...`, 'info');
@@ -190,18 +211,20 @@
           upsert: false
         });
         if (error) throw error;
-        event.target.value = '';
-        
-        // Mostrar preview
-        const { data: urlData } = db.storage.from(bucketName).getPublicUrl(fileName);
-        document.getElementById(`preview-${bucketName}`).src = urlData.publicUrl;
-        document.getElementById('branding-previews').classList.remove('hidden');
-        
+        delete _brandingPendiente[bucketName];
+        document.getElementById(`upload-${bucketName}`).value = '';
         mostrarNotificacion(`¡${bucketName.toUpperCase()} actualizado correctamente!`, 'success');
       } catch (err) {
         console.error(err);
         mostrarNotificacion(`Error al subir ${bucketName}. Verificá los permisos del bucket.`, 'error');
       }
+    }
+
+    window.cancelarBranding = function(bucketName) {
+      delete _brandingPendiente[bucketName];
+      document.getElementById(`upload-${bucketName}`).value = '';
+      document.getElementById(`preview-${bucketName}`).src = '';
+      document.getElementById(`confirm-${bucketName}`).classList.add('hidden');
     }
 
     // ==========================================
