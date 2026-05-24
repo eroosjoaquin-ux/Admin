@@ -204,15 +204,23 @@
       if (!file) return;
       try {
         mostrarNotificacion(`Subiendo ${bucketName}...`, 'info');
-        const fileExt = file.name.split('.').pop();
-        // Nombre fijo por tipo: logo_actual.ext / portada_actual.ext
-        // upsert:true sobreescribe el anterior — el público siempre lee la misma URL
-        const fileName = `${bucketName}_actual.${fileExt}`;
+
+        // Nombre fijo siempre igual para que la URL pública no cambie
+        const fileName = `${bucketName}_actual.jpg`;
+
+        // 1. Eliminar archivos anteriores (todas las extensiones posibles)
+        const exts = ['jpg', 'jpeg', 'png', 'webp'];
+        for (const ext of exts) {
+          await db.storage.from(bucketName).remove([`${bucketName}_actual.${ext}`]);
+        }
+
+        // 2. Subir nuevo archivo con nombre fijo
         const { error } = await db.storage.from(bucketName).upload(fileName, file, {
-          cacheControl: '3600',
+          cacheControl: '1',
           upsert: true
         });
         if (error) throw error;
+
         delete _brandingPendiente[bucketName];
         document.getElementById(`upload-${bucketName}`).value = '';
         document.getElementById(`confirm-${bucketName}`).classList.add('hidden');
