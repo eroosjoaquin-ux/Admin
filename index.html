@@ -45,49 +45,23 @@
       </div>
     </section>
 
-    <style>
-  /* Estos estilos aseguran el comportamiento horizontal */
-  .scroll-container { display: flex !important; overflow-x: auto !important; scroll-behavior: smooth; }
-  .scroll-container::-webkit-scrollbar { display: none; }
-  .scroll-container > div { min-width: 250px !important; flex-shrink: 0; }
-</style>
+    <!-- ── PANEL DE GESTIÓN (BRANDING Y NOTICIAS) ── -->
+    <section class="bg-slate-950 border border-slate-800 p-6 rounded-2xl space-y-8">
+      <div class="border-b border-slate-800 pb-4 mb-4">
+        <h2 class="text-lg font-black text-amber-400">Gestor de Contenido</h2>
+        <p class="text-sm text-slate-400">Administrá el diseño de la web y todas las noticias publicadas.</p>
+      </div>
 
-<section class="bg-slate-950 border border-slate-800 p-6 rounded-2xl space-y-8">
-  <div class="border-b border-slate-800 pb-4 mb-4">
-    <h2 class="text-lg font-black text-amber-400">Gestor de Contenido</h2>
-    <p class="text-sm text-slate-400">Administrá el diseño de la web y todas las noticias publicadas.</p>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    
-    <div class="space-y-4">
-      <h3 class="font-bold text-white flex items-center gap-2">
-        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-        Diseño del Sitio (Imágenes)
-      </h3>
-      <p class="text-xs text-slate-400">Subí los archivos ya recortados y listos para mostrar.</p>
-      <div class="grid grid-cols-2 gap-4">
-        </div>
-    </div>
-
-    <div class="space-y-4">
-      <h3 class="font-bold text-white flex items-center gap-2">
-        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14"></path></svg>
-        Todas las Noticias
-      </h3>
-      <p class="text-xs text-slate-400">Deslizá para ver todas las noticias.</p>
-      
-      <div class="relative flex items-center">
-  <button type="button" onclick="document.getElementById('lista-noticias-admin').scrollBy({left: -300, behavior: 'smooth'})" class="absolute -left-3 z-10 bg-slate-800 text-white p-2 rounded-full shadow-lg hover:bg-slate-700">❮</button>
-  
-  <div id="lista-noticias-admin" class="flex overflow-x-auto hide-scrollbar bg-slate-900 border border-slate-700 rounded-xl p-2 w-full gap-4">
-    <div class="p-4 text-center text-sm text-slate-500 w-full">Cargando noticias...</div>
-  </div>
-  
-  <button type="button" onclick="document.getElementById('lista-noticias-admin').scrollBy({left: 300, behavior: 'smooth'})" class="absolute -right-3 z-10 bg-slate-800 text-white p-2 rounded-full shadow-lg hover:bg-slate-700">❯</button>
-</div>
-  </div>
-</section>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Gestión de Branding -->
+        <div class="space-y-4">
+          <h3 class="font-bold text-white flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            Diseño del Sitio (Imágenes)
+          </h3>
+          <p class="text-xs text-slate-400">Subí los archivos ya recortados y listos para mostrar.</p>
+          <div class="grid grid-cols-2 gap-4">
             <!-- Botón Logo -->
             <button type="button" onclick="document.getElementById('upload-logo').click()" class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center hover:bg-slate-800 transition">
               <span class="block text-xs text-slate-400 mb-1">Elegir</span>
